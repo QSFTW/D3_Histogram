@@ -1,0 +1,21 @@
+body {
+  width: 100%;
+  font-family: Georgia, "Times New Roman", Times, serif;
+  background-color: hsl(120, 100, 50);
+}
+
+svg {
+  background-color: pink;
+}
+
+.cell:hover {
+  stroke: black;
+  stroke-width: 1.5px;
+}
+
+.tooltip{
+    position: absolute;
+    height: 70px;
+    width:140px;
+    background-color: lavender;
+}
