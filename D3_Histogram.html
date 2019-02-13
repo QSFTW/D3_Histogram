@@ -1,112 +1,141 @@
-<script src="https://d3js.org/d3.v5.min.js"></script>
-<style>
-  svg {
-    margin: auto auto;
-    background-color: #f0ffff;
-  }
-  body {
-    width: 100%;
-  }
-  .bar:hover {
-    fill: brown;
-  }
-  div.tooltip {
-    position: absolute;
-    text-align: center;
-    width: 80px;
-    height: 32px;
-    padding: 2px;
-    font: 12px sans-serif;
-    background: lightsteelblue;
-    border: 0px;
-    border-radius: 8px;
-    pointer-events: none;
-  }
-</style>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <style>
+      svg {
+        margin-left: 30%;
+        background-color: #eeeebb;
+      }
+      body {
+        width: 100%;
+      }
+      .bar:hover {
+        fill: brown;
+      }
+      div.tooltip {
+        margin-left: 30%;
+        position: absolute;
+        text-align: center;
+        width: 80px;
+        height: 32px;
+        padding: 2px;
+        font: 12px sans-serif;
+        background: rgb(75, 132, 206);
+        border: 0px;
+        border-radius: 8px;
+        pointer-events: none;
+      }
+    </style>
+    <title>D3_Histogram</title>
+  </head>
+  <body>
+    <script>
+      const URL =
+        "https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/master/GDP-data.json";
+      let req = new XMLHttpRequest();
+      req.open("GET", URL, true);
+      req.send();
+      req.onload = function() {
+        let gdpData = JSON.parse(req.responseText).data;
+        const w = 500;
+        const h = 300;
+        const padding = 40;
+        const xScale = d3
+          .scaleLinear()
+          .domain([0, gdpData.length])
+          .range([padding, w - padding]);
 
-<body>
-  <script>
-    const URL =
-      "https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/master/GDP-data.json";
-    let req = new XMLHttpRequest();
-    req.open("GET", URL, true);
-    req.send();
-    req.onload = function() {
-      let gdpData = JSON.parse(req.responseText).data;
-      const w = 500;
-      const h = 300;
-      const padding = 40;
-      const xScale = d3
-        .scaleLinear()
-        .domain([0, gdpData.length])
-        .range([padding, w - padding]);
+        const timeScale = d3
+          .scaleLinear()
+          .domain([1947, 2015])
+          .range([padding, w - padding]);
+        const yScale = d3
+          .scaleLinear()
+          .domain([0, d3.max(gdpData, d => d[1])])
+          .range([padding, h - padding]);
 
-      const timeScale = d3
-        .scaleLinear()
-        .domain([1947, 2015])
-        .range([padding, w - padding]);
-      const yScale = d3
-        .scaleLinear()
-        .domain([0, d3.max(gdpData, d => d[1])])
-        .range([padding, h - padding]);
+        const yLabelScale = d3
+          .scaleLinear()
+          .domain([0, d3.max(gdpData, d => d[1])])
+          .range([h - padding, padding]);
 
-      var div = d3
-        .select("body")
-        .append("div")
-        .attr("class", "tooltip")
-        .style("opacity", 0);
+        var div = d3
+          .select("body")
+          .append("div")
+          .attr("class", "tooltip")
+          .style("opacity", 0);
 
-      console.log(gdpData[0] + "\t" + gdpData[gdpData.length - 1]);
-      const svg = d3
-        .select("body")
-        .append("svg")
-        .attr("height", h)
-        .attr("width", w);
-      const recBars = svg
-        .selectAll("rect")
-        .data(gdpData)
-        .enter()
-        .append("rect")
-        .attr("height", d => yScale(d[1]))
-        .attr("width", w / gdpData.length)
-        .attr("x", (d, i) => xScale(i))
-        .attr("y", d => h - yScale(d[1]) - padding)
-        .attr("fill", "blue")
-        .attr("class", "bar")
-        .on("mouseover", function(d) {
-          div
-            .transition()
-            .duration(200)
-            .style("opacity", 0.9);
-          div.html(
-            "<span>" + d[0] + "<span>" + "<br>" + "<span>" + d[1] + "<span>"
-          );
-        })
-        .on("mouseout", function(d) {
-          div
-            .transition()
-            .duration(500)
-            .style("opacity", 0);
-        });
-      svg
-        .append("text")
-        .text("GDP from 1947 - 2015")
-        .attr("x", 200)
-        .attr("y", 50);
+        console.log(gdpData[0] + "\t" + gdpData[gdpData.length - 1]);
+        const svg = d3
+          .select("body")
+          .append("svg")
+          .attr("height", h)
+          .attr("width", w)
+          .style("margin", "auto%");
+        const recBars = svg
+          .selectAll("rect")
+          .data(gdpData)
+          .enter()
+          .append("rect")
+          .attr("height", d => yScale(d[1]))
+          .attr("width", w / gdpData.length)
+          .attr("x", (d, i) => xScale(i))
+          .attr("y", d => h - yScale(d[1]) - padding)
+          .attr("fill", "#1E8BC3")
+          .attr("class", "bar")
+          .on("mouseover", function(d) {
+            div
+              .transition()
+              .duration(200)
+              .style("opacity", 0.9);
+            div.html(
+              "<span>" + d[0] + "<span>" + "<br>" + "<span>" + d[1] + "<span>"
+            );
+          })
+          .on("mouseout", function(d) {
+            div
+              .transition()
+              .duration(500)
+              .style("opacity", 0);
+          });
+        svg
+          .append("text")
+          .text("GDP from 1947 - 2015")
+          .attr("x", 200)
+          .attr("y", 50);
 
-      const xAxis = d3.axisBottom(timeScale);
+        const xAxis = d3.axisBottom(timeScale);
 
-      const yAxis = d3.axisLeft(yScale);
+        const yAxis = d3.axisLeft(yLabelScale);
 
-      svg
-        .append("g")
-        .attr("transform", "translate(0," + (h - padding) + ")")
-        .call(xAxis);
+        svg
+          .append("g")
+          .attr("transform", "translate(0," + (h - padding) + ")")
+          .call(xAxis);
 
-      svg
-        .append("g")
-        .attr("transform", "translate(0" + padding + ")")
-        .call(yAxis);
-    };
-  </script>
-</body>
+        svg
+          .append("g")
+          .attr("transform", "translate(0" + padding + ")")
+          .call(yAxis);
+
+        svg
+          .append("text")
+          .text("Quaterly GDP in Million USD")
+          .attr("x", 10)
+          .attr("y", 20);
+
+        svg
+          .append("text")
+          .text("Year")
+          .attr("x", w / 2)
+          .attr("y", h - padding + 30);
+      };
+    </script>
+  </body>
+</html>
