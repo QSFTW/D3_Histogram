@@ -23,7 +23,8 @@
         const w = 500;
         const h = 500;
         const padding = 50;
-        const labelColor = ["#336E7B", "#BC3E31"]; //blue,red
+        const labelColor = ["#336E7B", "#BC3E31"]; //[ blue,red ]
+
         const xScale = d3
           .scaleLinear()
           .domain([
@@ -64,7 +65,7 @@
           .append("svg")
           .attr("width", w)
           .attr("height", h);
-
+        /*Adding points to plot*/
         svg
           .selectAll("circle")
           .data(cyclistData)
@@ -97,7 +98,7 @@
           .on("mouseout", function(d) {
             div.style("opacity", 0);
           });
-
+        /*Adding Axis and Title*/
         svg
           .append("g")
           .attr("transform", "translate(0," + (h - padding) + ")")
@@ -126,6 +127,37 @@
           .attr("x", 0.3 * w)
           .attr("y", h / 10);
 
+        /*Adding legend*/
+        const legend = svg
+          .append("g")
+          .attr("class", "legend")
+          .attr("transform", "translate(" + 0.75 * w + "," + 0.3 * h + ")");
+        legend
+          .append("rect")
+          .attr("x", 0)
+          .attr("y", 0)
+          .attr("height", 18)
+          .attr("width", 18)
+          .attr("fill", labelColor[0]);
+        legend
+          .append("text")
+          .text("Did not dope")
+          .attr("x", 20)
+          .attr("y", 18);
+
+        legend
+          .append("rect")
+          .attr("x", 0)
+          .attr("y", 30)
+          .attr("height", 18)
+          .attr("width", 18)
+          .attr("fill", labelColor[1]);
+        legend
+          .append("text")
+          .text("Doped")
+          .attr("x", 20)
+          .attr("y", 48);
+
         // svg
         //   .selectAll("legend")
         //   .data(labelColor)
@@ -135,15 +167,13 @@
         //   .attr("transform", (d, i) => {
         //     return "translate(0," + (height / 2 - i * 20) + ")";
         //   });
-          
+
         // legend
         //   .append("rect")
         //   .attr("x", width - 18)
         //   .attr("width", 18)
         //   .attr("height", 18)
         //   .style("fill", labelColor);
-
-       
       }; /*end of onload*/
     </script>
   </body>

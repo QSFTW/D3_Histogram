@@ -1,1 +1,3 @@
-##This is a Interactive Histogram made using d3JS
+## Interactive Webpages built using D3.js  
+- Histogram
+- Scatter Plot
