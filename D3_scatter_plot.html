@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <link href="./scatter_plot.css" rel="stylesheet" />
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <title>D3 Scatter Plot</title>
+  </head>
+  <body>
+    <script>
+      const URL =
+        "https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/master/cyclist-data.json";
+      let req = new XMLHttpRequest();
+      req.open("GET", URL, true);
+      req.send();
+      req.onload = () => {
+        let cyclistData = JSON.parse(req.responseText);
+        console.log(cyclistData);
+        const w = 500;
+        const h = 500;
+        const padding = 50;
+        const labelColor = ["#336E7B", "#BC3E31"]; //blue,red
+        const xScale = d3
+          .scaleLinear()
+          .domain([
+            d3.min(cyclistData, d => d.Year - 3),
+            d3.max(cyclistData, d => d.Year + 3)
+          ])
+          .range([padding, w - padding]);
+
+        const yScale = d3
+          .scaleLinear()
+          .domain([
+            d3.min(cyclistData, d => d.Seconds - 50),
+            d3.max(cyclistData, d => d.Seconds + 50)
+          ])
+          .range([padding, h - padding]);
+
+        secToMinSec = d => {
+          const min = Math.floor(d / 60);
+          const sec = d % 60;
+          return [
+            min < 10 ? [0, min].join("") : min,
+            sec < 10 ? [0, sec].join("") : sec
+          ].join(":");
+        };
+        const xAxis = d3.axisBottom(xScale);
+        const yAxis = d3.axisLeft(yScale).tickFormat(d => {
+          return secToMinSec(d);
+        });
+        let div = d3
+          .select("body")
+          .append("div")
+          .attr("class", "tooltip")
+          .attr("id", "tooltip")
+          .style("opacity", 0);
+
+        const svg = d3
+          .select("body")
+          .append("svg")
+          .attr("width", w)
+          .attr("height", h);
+
+        svg
+          .selectAll("circle")
+          .data(cyclistData)
+          .enter()
+          .append("circle")
+          .attr("r", 5)
+          .attr("cx", d => xScale(d.Year))
+          .attr("cy", d => yScale(d.Seconds))
+          .attr("fill", d => (d.Doping === "" ? labelColor[0] : labelColor[1]))
+          .attr("class", "dot")
+          .on("mouseover", function(d) {
+            div.style("opacity", 0.9);
+            div.attr("data-year", d.Year);
+            div
+              .html(
+                d.Name +
+                  ": " +
+                  d.Nationality +
+                  "<br/>" +
+                  "Time: " +
+                  d.Time +
+                  "<br/>" +
+                  "Year: " +
+                  d.Year +
+                  (d.Doping ? "<br/><br/>" + d.Doping : "")
+              )
+              .style("left", d3.event.pageX + "px") //position using mouse event
+              .style("top", d3.event.pageY - 28 + "px");
+          }) /*end of mouse-over*/
+          .on("mouseout", function(d) {
+            div.style("opacity", 0);
+          });
+
+        svg
+          .append("g")
+          .attr("transform", "translate(0," + (h - padding) + ")")
+          .call(xAxis);
+
+        svg
+          .append("g")
+          .attr("transform", "translate(" + padding + ",0)")
+          .call(yAxis);
+
+        svg
+          .append("text")
+          .text("Time Record in MM:SS")
+          .attr("x", 0)
+          .attr("y", padding / 2);
+
+        svg
+          .append("text")
+          .text("Year")
+          .attr("x", w / 2)
+          .attr("y", h - 10);
+
+        svg
+          .append("text")
+          .text("Performances of Cyclysts")
+          .attr("x", 0.3 * w)
+          .attr("y", h / 10);
+
+        // svg
+        //   .selectAll("legend")
+        //   .data(labelColor)
+        //   .enter()
+        //   .append("g")
+        //   .attr("class", "legend")
+        //   .attr("transform", (d, i) => {
+        //     return "translate(0," + (height / 2 - i * 20) + ")";
+        //   });
+          
+        // legend
+        //   .append("rect")
+        //   .attr("x", width - 18)
+        //   .attr("width", 18)
+        //   .attr("height", 18)
+        //   .style("fill", labelColor);
+
+       
+      }; /*end of onload*/
+    </script>
+  </body>
+</html>
