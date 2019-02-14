@@ -11,6 +11,12 @@
     <title>D3 Heatmap</title>
   </head>
   <body>
+    <h1 id="title" style="text-align: center">
+      Heatmap for the Globe Surface Temperature
+    </h1>
+    <h3 id="description" style="color:red; text-align:center;">
+      Warning! Global Warming is REALLLLLL!!!!!
+    </h3>
     <script>
       const URL =
         "https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/master/global-temperature.json";
@@ -35,11 +41,11 @@
         const { baseTemperature, monthlyVariance } = JSON.parse(
           req.responseText
         );
-        console.log(monthlyVariance[0]);
+
         //Canvas setting
-        const h = 600;
+        const h = 700;
         const w = 2400;
-        const padding = 60;
+        const padding = 100;
 
         const varDiff =
           d3.max(monthlyVariance, d => d.variance) -
@@ -61,7 +67,8 @@
           .scaleLinear()
           .domain([1, 12])
           .range([padding, h]);
-
+        const xAxis = d3.axisBottom(xScale);
+        const yAxis = d3.axisLeft(yScale).tickFormat(d => MONTHS[d - 1]);
         const svg = d3
           .select("body")
           .append("svg")
@@ -80,13 +87,13 @@
               return (
                 "hsl(" +
                 (150 - Math.sqrt(d.variance / varDiff) * 150) +
-                "deg, 50%, 50%)"
+                "deg, 80%, 50%)"
               );
             } else {
               return (
                 "hsl(" +
                 (150 + Math.sqrt(-d.variance / varDiff) * 150) +
-                "deg, 50%, 50%)"
+                "deg, 80%, 50%)"
               );
             }
           })
@@ -111,6 +118,40 @@
           .on("mouseout", () => {
             div.style("opacity", 0);
           });
+
+        //add axis
+        svg
+          .append("g")
+          .attr("transform", "translate(0," + (h - padding + 58) + ")")
+          .call(xAxis);
+
+        svg
+          .append("g")
+          .attr("transform", "translate(" + padding + "," + -padding / 2 + ")")
+          .call(yAxis);
+
+        //add legend
+        let legend = svg
+          .append("g")
+          .attr("class", "legend")
+          .attr("transform", "translate(10, 100) rotate(90)");
+        ((i = -2) => {
+          while (i <= 2) {
+            legend
+              .append("rect")
+              .attr("y", -20)
+              .attr("x", (i + 2) * 30)
+              .attr("height", 30)
+              .attr("width", 30)
+              .attr("fill", "hsl(" + (150 - 75 * i) + "deg, 80%, 50%)");
+            legend
+              .append("text")
+              .text(Math.floor((baseTemperature + (varDiff / 5) * i) * 10) / 10)
+              .attr("y", -35)
+              .attr("x", (i + 2) * 30);
+            i++;
+          }
+        })();
       }; /*end of onload*/
     </script>
   </body>
